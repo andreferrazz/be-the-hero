@@ -1,3 +1,8 @@
+/*
+    Pendência: Adicionar validações
+*/
+
+
 const express = require('express');
 const OngController = require('./controllers/OngController');
 const IncidentController = require('./controllers/IncidentController');
@@ -10,6 +15,7 @@ const routes = express.Router();
 routes.post('/sessions', SessionController.create);
 
 routes.get('/ongs', OngController.index);
+
 routes.post('/ongs', celebrate({
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string().required(),
@@ -25,8 +31,15 @@ routes.get('/profile', celebrate({
         authorization: Joi.string().required(),
     }).unknown()
 }), ProfileController.index);
-routes.get('/incidents', IncidentController.index);
+
+routes.get('/incidents', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+        page: Joi.number(),
+    })
+}), IncidentController.index);
+
 routes.post('/incidents', IncidentController.create);
+
 routes.delete('/incidents/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
         id: Joi.number().required(),
